@@ -1,0 +1,51 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+const double omega=3.0;
+
+//Solución de una ecuación diferencial de segundo orden
+
+double f1(double l, double r,double x1, double x2){
+  return -(x1/r)-x2*l*l;
+}
+
+double f2(double l, double r,double x1, double x2){
+  return x1;
+}
+
+
+void UnPasoDeRungeKutta4(double l,double &r0, double &x10, double &x20,  double dr){
+  double dx11,dx21,dx31,dx41;
+  double dx12,dx22,dx32,dx42;
+  
+  dx11=f1(l,r0,x10,x20)*dr;
+  dx12=f2(l,r0,x10,x20)*dr;
+  
+  dx21=f1(l,r0+dr/2,x10+dx11/2,x20+dx12/2)*dr;
+  dx22=f2(l,r0+dr/2,x10+dx11/2,x20+dx12/2)*dr;
+  
+  dx31=f1(l,r0+dr/2,x10+dx21/2,x20+dx22/2)*dr;
+  dx32=f2(l,r0+dr/2,x10+dx21/2,x20+dx22/2)*dr;
+  
+  dx41=f1(l,r0+dr,x10+dx31,x20+dx32)*dr;
+  dx42=f2(l,r0+dr,x10+dx31,x20+dx32)*dr;
+  
+  r0+=dr;
+  x10+=(l,dx11+2*(dx21+dx31)+dx41)/6;
+  x20+=(l,dx12+2*(dx22+dx32)+dx42)/6;
+}
+
+int main(){
+  double l,r,x1,x2, dr=0.01;
+
+  for(l=0.1; l<=15.0; l+=0.01){
+  for(r=0.02,x1=0,x2=1 ; r<10.0 ;r+=0.01){
+    if(r>0.9999 && r<1.0001){
+    cout<<l<<"\t"<<r<<"\t"<<x1<<"\t"<<x2<<endl;
+    }
+    UnPasoDeRungeKutta4(l,r,x1,x2,dr);
+  }
+  }
+  return 0;
+}
