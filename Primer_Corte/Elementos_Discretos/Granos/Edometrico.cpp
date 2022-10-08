@@ -96,7 +96,7 @@ double Colisionador::GetEp(void){
 void Colisionador::Inicie(void){
   for(int i=0;i<N+4;i++)  
     for(int j=0;j<N+4;j++)
-      dcontacto[i][j]=hold[i][j]=0;
+      dcontacto[i][j]=hold[i][j]=0; //Poner a todos en 0
 }
 void Colisionador::CalculeFuerzas(Cuerpo *Grano,double dt){
   int i,j;

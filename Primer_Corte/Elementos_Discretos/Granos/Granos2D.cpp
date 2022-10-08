@@ -118,7 +118,7 @@ int main(void){
   Crandom ran64(1);
   double m0=1, R0=2, kT=10, V0=sqrt(2*kT/m0);
   int i,ix,iy;
-  double t,tdibujo,tmax=10*(Lx/V0),tcuadro=tmax/1000,dt=0.01;
+  double t,tdibujo,tmax=10*(Lx/V0),tcuadro=tmax/1000,dt=0.001;
   double dx=Lx/(Nx+1), dy=Ly/(Ny+1);
   double Theta;
   
@@ -145,7 +145,7 @@ int main(void){
       //--------------------(   x0,   y0,          Vx0,          Vy0, m0,R0,theta0,omega0)
       Grano[Nx*iy+ix].Inicie((ix+1)*dx,(iy+1)*dy,V0*cos(Theta),V0*sin(Theta), m0,R0,0,1);//OJO
     }
-  for(t=0,tdibujo=0 ; t<200 ; t+=dt,tdibujo+=dt){
+  for(t=0,tdibujo=0 ; t<tmax ; t+=dt,tdibujo+=dt){
     //Dibujar
     if(tdibujo>tcuadro){
       

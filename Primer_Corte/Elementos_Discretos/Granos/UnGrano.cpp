@@ -6,7 +6,7 @@
 using namespace std;
 
 //---- declarar constantes ---
-const double g=9.8, K=1.0e4; //Gamma=50, Kcundall=10, MU=0.4;
+const double g=9.8, K=1.0e4, Gamma=20;
 const double Lx=60, Ly=60;
 const int Nx=1, Ny=1, N=Nx*Ny;
 
@@ -52,7 +52,7 @@ void Cuerpo::Mueva_V(double dt, double Coeficiente){
 }
 void Cuerpo::Dibujese(void){
   cout<<" , "<<r.x()<<"+"<<R<<"*cos(t),"<<r.y()<<"+"<<R<<"*sin(t)";
-  cout<<" , "<<r.x()<<"+"<<R*cos(theta)/7<<"*t,"<<r.y()<<"+"<<R*sin(theta)/7<<"*t";
+  //cout<<" , "<<r.x()<<"+"<<R*cos(theta)/7<<"*t,"<<r.y()<<"+"<<R*sin(theta)/7<<"*t";
 }
 
 //--- clase Colisionador ----
@@ -84,7 +84,11 @@ void Colisionador::CalculeFuerzaEntre(Cuerpo & Grano1, Cuerpo & Grano2){
   double d=r21.norm(),s=Grano1.R+Grano2.R-d;
   if(s>0){
     vector3D n=r21*(1.0/d);
-    vector3D F2=n*(K*pow(s,1.5));
+
+    //Fuerza de Hertz-kuwabara-Kono
+    double m12=(Grano1.m*Grano2.m)/(Grano1.m+Grano2.m);
+    vector3D V21=Grano2.V-Grano1.V;
+    vector3D F2=n*(K*pow(s,1.5))-V21*(Gamma*sqrt(s)*m12);
     Grano2.AdicioneFuerza(F2);   Grano1.AdicioneFuerza(F2*(-1));
   }   
 }
