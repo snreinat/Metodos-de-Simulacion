@@ -7,7 +7,7 @@ double f (double t,double x){
   return x;
 }
 
-double UnPasoDeEuler(double &t, double &x, double dt){
+void UnPasoDeEuler(double &t, double &x, double dt){
   double dx;
   dx=f(t,x)*dt;
   t+=dt;

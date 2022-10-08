@@ -7,7 +7,7 @@ double f (double t,double x){
   return x;
 }
 
-double UnPasoDeRungeKutta4(double &t0, double &x0, double dt){
+void UnPasoDeRungeKutta4(double &t0, double &x0, double dt){
   double dx1,dx2,dx3,dx4;
   dx1=f(t0,x0)*dt;
   dx2=f(t0+dt/2,x0+dx1/2)*dt;

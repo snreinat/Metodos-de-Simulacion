@@ -13,7 +13,7 @@ double f2 (double t,double x1, double x2){
   return x1;
 }
 
-double UnPasoDeRungeKutta4(double &t0, double &x10, double &x20, double dt){
+void UnPasoDeRungeKutta4(double &t0, double &x10, double &x20, double dt){
   double dx11,dx21,dx31,dx41;
   double dx12,dx22,dx32,dx42;
 
