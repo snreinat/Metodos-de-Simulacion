@@ -1,16 +1,13 @@
-
-// SIMULACIÓN DEL MOVIMIENTO DE N PARTÍCULAS BAJO FUERZAS DE REPULSIÓN ELECTRÓSTÁTICA Y FUERZAS CENTRALES
+// SIMULACIÓN DEL MOVIMIENTO DE UNA PARTÍCULA  BAJO UNA FUERZA CENTRAL
 
 #include <iostream>
 #include <cmath>
 #include "vector.h"
-#include "Random64.h"
 using namespace std;
 
 //---- declarar constantes ---
 const double K=1000, Kcentral=1.0;
-const double Lx=200, Ly=200;
-const int Nx=1, Ny=1, N=Nx*Ny;
+const int N=1;
 
 const double epsilon=0.1786178958448091e00;
 const double lambda=-0.2123418310626054e00;
@@ -49,7 +46,6 @@ void Cuerpo::Mueva_V(double dt, double Coeficiente){
 }
 void Cuerpo::Dibujese(void){
   cout<<" , "<<r.x()<<"+"<<R<<"*cos(t),"<<r.y()<<"+"<<R<<"*sin(t)";
-  // cout<<" , "<<r.x()<<"+"<<R*cos(theta)/7<<"*t,"<<r.y()<<"+"<<R*sin(theta)/7<<"*t";
 }
 
 
@@ -58,14 +54,14 @@ class Colisionador{
 private:
 public:
   void CalculeFuerzas(Cuerpo * Particula);
-  void CalculeFuerzaEntre(Cuerpo & Particula1, Cuerpo & Particula2);
   void FuerzaCentral(Cuerpo & Particula1);
 };
+
 
 void Colisionador::CalculeFuerzas(Cuerpo * Particula){
   int i,j;
   
-   //--- Borrar todas las fuerzas ---
+  //--- Borrar todas las fuerzas ---
   for(i=0;i<N;i++)
     Particula[i].BorreFuerza();
   
@@ -73,26 +69,9 @@ void Colisionador::CalculeFuerzas(Cuerpo * Particula){
   for(i=0;i<N;i++){
     FuerzaCentral(Particula[i]);
   }
-  //--- Calcular Fuerzas entre pares de particulas ---
-  for(i=0;i<N;i++)
-    for(j=i+1;j<N;j++){
-      CalculeFuerzaEntre(Particula[i], Particula[j]);
-    }
 }
 
-
-//Fuerza de repulsión electrostática
-
-void Colisionador::CalculeFuerzaEntre(Cuerpo & Particula1,Cuerpo & Particula2){
-  vector3D r21=Particula2.r-Particula1.r;
-  double d=r21.norm(); //Norma del vector r_ij
-  vector3D n=r21*(1.0/d);//vector r_ij unitario
-  
-  vector3D F12=((K*Particula1.Q*Particula2.Q)/(d*d))*n; //Fuerza que la partícula i le hace a la j
-  Particula2.AdicioneFuerza(F12);   Particula1.AdicioneFuerza(F12*(-1));
-  }
-
-
+//--- Calcular la fuerza central---
 void Colisionador::FuerzaCentral(Cuerpo & Particula1){
   vector3D Fi=(-1)*Kcentral*Particula1.r;
   Particula1.AdicioneFuerza(Fi);
@@ -102,7 +81,7 @@ void Colisionador::FuerzaCentral(Cuerpo & Particula1){
 
 void InicieAnimacion(void){
   //cout<<"set terminal gif animate"<<endl; 
-  //cout<<"set output 'Gas2D.gif'"<<endl;
+  //cout<<"set output 'Primero_Animacion.gif'"<<endl;
   cout<<"unset key"<<endl;
   cout<<"set xrange[-110:110]"<<endl;
   cout<<"set yrange[-110:110]"<<endl;
@@ -114,10 +93,6 @@ void InicieAnimacion(void){
 
 void InicieCuadro(void){
     cout<<"plot 0,0 ";
-    // cout<<" , "<<Lx/7<<"*t,0";        //pared de abajo
-    //cout<<" , "<<Lx/7<<"*t,"<<Ly;     //pared de arriba
-    //cout<<" , 0,"<<Ly/7<<"*t";        //pared de la izquierda
-    //cout<<" , "<<Lx<<","<<Ly/7<<"*t"; //pared de la derecha
     }
 
 void TermineCuadro(void){
@@ -128,22 +103,23 @@ void TermineCuadro(void){
 int main(void){
   Cuerpo Particula[N];
   Colisionador Hertz;
-  Crandom ran64(1);
-  double m0=1.0, R0=3.0, kT=10.0, V0=sqrt(2*kT/m0), Q=1;
-  int i,ix,iy;
+  double m0=1.0, R0=3.0, Q=1;
+  int i;
   double T=2*M_PI*sqrt(m0/Kcentral);
-  double t,tdibujo,tmax=5*T, tcuadro=tmax/1000,dt=0.001;
+  double t,tdibujo,tmax=5*T, tcuadro=tmax/5000,dt=0.01;
   double Theta;
   double Ranillo=40.0;
 
   
   
   //Inicializar Molécula:
+  // La partícula debe estar a una distancia de Ranillo del centro, en el eje x
       
- //-------------------------(       x0,   y0,           Vx0,           Vy0, m0, R0)
-  //Particula[0].Inicie(Lx/2+Ranillo, Ly/2, V0*cos(Theta), V0*sin(Theta), m0, R0); // La partícula debe estar a una distancia de Ranillo del centro, en el eje x
-  Particula[0].Inicie(40,0, 0, 0, m0, R0); // La partícula debe estar a una distancia de Ranillo del centro, en el eje x
- InicieAnimacion(); //Dibujar
+ //------------------(x0,y0,Vx0,Vy0, m0, R0)
+  Particula[0].Inicie(40, 0,  0,  0, m0, R0);
+
+  
+ InicieAnimacion(); 
   
   for(t=0, tdibujo=0; t<tmax; t+=dt, tdibujo+=dt){
     
@@ -151,9 +127,9 @@ int main(void){
     if(tdibujo>tcuadro){
   
       InicieCuadro();
-      for(i=0; i<N; i++){
+       for(i=0; i<N; i++){
 	Particula[i].Dibujese();
-      }
+	 }
       TermineCuadro();
       
        tdibujo=0;
@@ -175,8 +151,6 @@ int main(void){
     for(i=0;i<N;i++)Particula[i].Mueva_r(dt,epsilon);  
 
   }   
-
- 
   
   return 0;
 }
