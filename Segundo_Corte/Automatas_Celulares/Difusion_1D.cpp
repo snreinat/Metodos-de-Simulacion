@@ -44,7 +44,7 @@ double LatticeGas::Varianza(void){
   
   //Calcular Sigma2
    for(Sigma2=0, ix=0; ix<Lx; ix++)
-     Sigma2+=pow(ix*-Xprom,2.0)*rho(ix);
+     Sigma2+=pow((ix-Xprom),2.0)*rho(ix);
    Sigma2/=(N-1);
 
    return Sigma2;
@@ -79,18 +79,18 @@ void LatticeGas::Show(void){
 }
 
 void LatticeGas::GrafiqueRho(void){
-  //for(int ix=0;ix<Lx;ix++)
-  // cout<<ix<<" "<<rho(ix)<<endl;
+  for(int ix=0;ix<Lx;ix++)
+   cout<<ix<<" "<<rho(ix)<<endl;
 }
 
 void LatticeGas::Colisione(Crandom & ran64){
 
   for (int ix=0; ix<Lx;ix++){ //Para cada celda
     if(ran64.r()>p){//Genero un número al azar y si es mayor que p volteo
-      nnew[ix][0]=n[ix][1]; nnew[ix][1]==n[ix][0];//intercambia los contenidos
+      nnew[ix][0]=n[ix][1]; nnew[ix][1]=n[ix][0];//intercambia los contenidos
     }
       else
-	{ nnew[ix][0]=n[ix][0]; nnew[ix][1]==n[ix][1];}// No los intercambia
+	{ nnew[ix][0]=n[ix][0]; nnew[ix][1]=n[ix][1];}// No los intercambia
   }
 }
 void LatticeGas::Adveccione(void){
@@ -118,6 +118,7 @@ int main(void){
       Difusion.Colisione(ran64);
     Difusion.Adveccione();
   }
+  // Difusion.GrafiqueRho();
   
   return 0;
 }
