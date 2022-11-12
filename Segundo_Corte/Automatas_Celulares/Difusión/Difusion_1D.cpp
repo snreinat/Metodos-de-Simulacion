@@ -18,7 +18,7 @@ public:
   LatticeGas(void);
   void Borrese(void);
   void Inicie(int N, double mu, double sigma, Crandom &ran64);//Importante pasar por referencia para solo usar un generador aleatorio
-  void Show();
+  void Show(void);
   void Colisione(Crandom & ran64);
   void Adveccione(void);
   double rho(int ix){return n[ix][0]+n[ix][1];};
@@ -26,9 +26,56 @@ public:
   void GrafiqueRho(void);
 };
 
+
 LatticeGas::LatticeGas(void){
   V[0]=1; V[1]=-1;  
 }
+
+void LatticeGas::Borrese(void){
+  for (int ix=0; ix<Lx;ix++)
+    for(int i=0;i<Q;i++)
+      n[ix][i]=nnew[ix][i]=0;
+}
+
+void LatticeGas::Inicie(int N, double mu, double sigma, Crandom &ran64){
+  int ix,i;
+  while (N>0){ 
+    ix=(int) ran64.gauss(mu,sigma);//Escoger una celda al azar, el (int) lo convierte a entero
+    if(ix<0) ix=0; if(ix>Lx-1) ix=Lx-1;//COrrgir en los bordes si es necesario
+    i=(int)Q*ran64.r(); //Escoger una dirección al azar, elige un número entre 0 y Q
+    
+    if (n[ix][i]==0) //si ese sitio está vacío
+      { n[ix][i]=1; N--;}//pongo una bolita ahí y decrezco N
+    // Busco otro sitio 
+	 }
+}
+
+void LatticeGas::Show(void){
+  for(int i=0;i<Q;i++){ // El for va al revés porque primero imprimo todos los que van a la derecha y después todos los que van a la izquierda
+    for (int ix=0; ix<Lx;ix++)
+      cout<<n[ix][i];
+    cout<< endl;
+  }
+}
+
+//Girar o no girar 
+void LatticeGas::Colisione(Crandom & ran64){
+  
+  for (int ix=0; ix<Lx; ix++){ //Para cada celda
+    if(ran64.r()>p)//Genero un número al azar y si es mayor que p volteo
+      {nnew[ix][0]=n[ix][1]; nnew[ix][1]=n[ix][0];}//intercambia los contenidos
+    else
+      { nnew[ix][0]=n[ix][0]; nnew[ix][1]=n[ix][1];}// No los intercambia
+  }
+}
+
+//Moverse a las siguientes celdas
+void LatticeGas::Adveccione(void){
+   for (int ix=0; ix<Lx;ix++)
+	for(int i=0;i<Q;i++)
+	  n[(ix+V[i]+Lx)%Lx][i]=nnew[ix][i];// el %Lx genera condiciones de frontera periodicas 
+  }
+
 
 double LatticeGas::Varianza(void){
   int ix; double N, Xprom, Sigma2;
@@ -50,54 +97,15 @@ double LatticeGas::Varianza(void){
    return Sigma2;
   
 }
-void LatticeGas::Borrese(void){
-  for (int ix=0; ix<Lx;ix++)
-    for(int i=0;i<Q;i++)
-      n[ix][i]=nnew[ix][i]=0;
-}
 
-void LatticeGas::Inicie(int N, double mu, double sigma, Crandom &ran64){
-  int ix,i;
-  while (N>0){ 
-    ix=(int)ran64.gauss(mu,sigma);//Escoger una celda al azar, el (int) lo convierte a entero
-    if(ix<0) ix=0; if(ix>Lx-1) ix=Lx-1;//COrrgir en los bordes si es necesario
-    i=(int)Q*ran64.r(); //Escoger una dirección al azar, elige un número entre 0 y Q
-    
-    if (n[ix][i]==0) //si (ese sitio está)
-      { n[ix][i]=1; N--;}
-   //pongo una bolita ahí y decrezco N
-    // Busco otro sitio 
-	 }
-}
-
-void LatticeGas::Show(void){
-  for(int i=0;i<Q;i++){ // El for va al revés porque primero imprimo todos los que van a la derecha y después todos los que van a la izquierda
-    for (int ix=0; ix<Lx;ix++)
-      cout<<n[ix][i];
-    cout<< endl;
-  }
-}
 
 void LatticeGas::GrafiqueRho(void){
   for(int ix=0;ix<Lx;ix++)
    cout<<ix<<" "<<rho(ix)<<endl;
 }
 
-void LatticeGas::Colisione(Crandom & ran64){
 
-  for (int ix=0; ix<Lx;ix++){ //Para cada celda
-    if(ran64.r()>p){//Genero un número al azar y si es mayor que p volteo
-      nnew[ix][0]=n[ix][1]; nnew[ix][1]=n[ix][0];//intercambia los contenidos
-    }
-      else
-	{ nnew[ix][0]=n[ix][0]; nnew[ix][1]=n[ix][1];}// No los intercambia
-  }
-}
-void LatticeGas::Adveccione(void){
-   for (int ix=0; ix<Lx;ix++)
-	for(int i=0;i<Q;i++)
-	  n[(ix+V[i]+Lx)%Lx][i]=nnew[ix][i];// el %Lx genera condiciones de frontera periodicas 
-  }
+
 
 
 //-----------Programa Principal------------
@@ -105,7 +113,7 @@ void LatticeGas::Adveccione(void){
 int main(void){
   
   LatticeGas Difusion;
-  Crandom ran64(1);
+  Crandom ran64(1);//Se puede iniciar con cualquier semilla que no sea 0
   int N=400;
   double mu=Lx/2, sigma=Lx/8;
   int t, tmax=400;
