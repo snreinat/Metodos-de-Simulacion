@@ -9,20 +9,23 @@ const int Ly=128;
 const int Q=5;
 const double W0=1.0/3;
 
-const double C=0.5; // C<0.707 cells/click
+const double C=0.5; // C<0.707 cells/click  (velocidad de propagación)
 const double C2=C*C;
 const double AUX0=1-3*C2*(1-W0);
 
-const double tau=0.5;
+const double tau=0.5; //caso partícular de Tao=1/2
 const double Utau=1.0/tau;
 const double UmUtau=1-Utau;
+
+
+//-------------Class LatticeBoltzmann--------------
 
 class LatticeBoltzmann{
   
 private:
   double w[Q];      //Weights
   int Vx[Q], Vy[Q]; //Velocity vectors
-  double *f, *fnew;  //Distribution Functions
+  double *f, *fnew;  //Distribution Functions (matrices)
   
 public:
   LatticeBoltzmann(void);//constructor
@@ -40,7 +43,7 @@ public:
   
 };
 
-
+//Constructor 
 LatticeBoltzmann::LatticeBoltzmann(void){
   //Set the weights
   w[0]=W0; w[1]=w[2]=w[3]=w[4]=(1.0-W0)/4;
@@ -52,7 +55,7 @@ LatticeBoltzmann::LatticeBoltzmann(void){
   f=new double [ArraySize];  fnew=new double [ArraySize];
 }
 
-
+//Destructor
 LatticeBoltzmann::~LatticeBoltzmann(void){
   delete[] f;  delete[] fnew;
 }

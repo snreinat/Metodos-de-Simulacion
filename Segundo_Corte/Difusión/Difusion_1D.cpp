@@ -90,8 +90,8 @@ double LatticeGas::Varianza(void){
   Xprom/=N;
   
   //Calcular Sigma2
-   for(Sigma2=0, ix=0; ix<Lx; ix++)
-     Sigma2+=pow((ix-Xprom),2.0)*rho(ix);
+  for(Sigma2=0, ix=0; ix<Lx; ix++){
+    Sigma2+=pow((ix-Xprom),2.0)*rho(ix);}
    Sigma2/=(N-1);
 
    return Sigma2;
@@ -123,10 +123,10 @@ int main(void){
 
   for(t=0; t<tmax;t++){
     cout<<t<<" "<<Difusion.Varianza()<<endl;
-      Difusion.Colisione(ran64);
+    Difusion.Colisione(ran64);
     Difusion.Adveccione();
   }
-  // Difusion.GrafiqueRho();
+  //Difusion.GrafiqueRho();
   
   return 0;
 }

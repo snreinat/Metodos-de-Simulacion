@@ -12,7 +12,7 @@ const int Q=2;//Número de flechas
 class LatticeGas{
 private:
   int V[Q]; //Matriz de Q direcciones.V[i] i=0 (derecha) i=1 (izquierda)
-  int f[Lx][Q], fnew[Lx][Q];//f[ix][i]
+  double f[Lx][Q], fnew[Lx][Q];//f[ix][i]
 public:
   LatticeGas(void);
   void Inicie(int N, double mu, double sigma);//Importante pasar por referencia para solo usar un generador aleatorio
@@ -29,31 +29,17 @@ LatticeGas::LatticeGas(void){
 
 void LatticeGas::Inicie(int N, double mu, double sigma){
   for(int ix=0;ix<Lx;ix++){
-    double rho=N*1.0/(sigma*sqrt(2.0*M_PI))*exp(-0.5*pow(ix-mu/sigma,2.0));
+    double rho=(N/(sigma*sqrt(2.0*M_PI)))*exp(-0.5*pow((ix-mu)/sigma,2.0));// rho es la densidad de probabilidad Gaussiana
   for(int i=0;i<Q;i++)
     f[ix][i]=rho/Q;
   }
 }
 
 
-double LatticeGas::rho(int ix){
-  double suma; int i;
-  for(suma=0;i<Q;i++)
-    suma+=f[ix][i];
-  return suma;
-}
-
-
-void LatticeGas::GrafiqueRho(void){
-  for(int ix=0;ix<Lx;ix++)
-   cout<<ix<<" "<<rho(ix)<<endl;
-}
-
 void LatticeGas::Colisione(){
   int ix,i,j;
- 
   for (ix=0; ix<Lx;ix++)//Para cada celda
-    for(i=0;i<Q;i++){
+    for(i=0;i<Q;i++){ //y en cada dirección
       j=(i+1)%Q;
       fnew[ix][i]=f[ix][i]+(1-p)*(f[ix][j]-f[ix][i]);
     }
@@ -86,6 +72,20 @@ double LatticeGas::Varianza(void){
    return Sigma2;
   
 }
+
+
+double LatticeGas::rho(int ix){
+  double suma; int i;
+  for(suma=0,i=0;i<Q;i++)
+    suma+=f[ix][i]; //sumo las f y eso me da rho
+  return suma;
+}
+
+void LatticeGas::GrafiqueRho(void){
+  for(int ix=0;ix<Lx;ix++)
+   cout<<ix<<" "<<rho(ix)<<endl;
+}
+
 
 //-----------Programa Principal------------
 
