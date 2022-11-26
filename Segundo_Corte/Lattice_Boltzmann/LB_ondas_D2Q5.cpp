@@ -13,7 +13,7 @@ const double C=0.5; // C<0.707 cells/click  (velocidad de propagación)
 const double C2=C*C;
 const double AUX0=1-3*C2*(1-W0);
 
-const double tau=0.5; //caso partícular de Tao=1/2
+const double tau=0.5; //caso partícular de Tau=1/2
 const double Utau=1.0/tau;
 const double UmUtau=1-Utau;
 
