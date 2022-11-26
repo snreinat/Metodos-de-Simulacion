@@ -8,7 +8,7 @@ const int Ly=64;
 
 const int Q=9;
 
-const double tau=0.55;
+const double tau=1.2;//0.55;
 const double Utau=1.0/tau;
 const double UmUtau=1-Utau;
 const double ThreeUmU2tau=3*(1-1/(2*tau)); //Nueva Variable
@@ -91,6 +91,7 @@ void LatticeBoltzmann::Start(double rho0,double Ux0,double Uy0){
 
 void LatticeBoltzmann::Collision(double gx,double gy){
   int ix,iy,i,n0; double rho0,Ux0,Uy0; double Fx,Fy;
+  
   for(ix=0;ix<Lx;ix++) //for each cell
     for(iy=0;iy<Ly;iy++){
       //compute the macroscopic fields on the cell
@@ -105,11 +106,13 @@ void LatticeBoltzmann::Collision(double gx,double gy){
 
 void LatticeBoltzmann::ImposeFields(void){
   int i,ix,iy,n0; double rho0;
+  
   iy=0; //Lower Wall
   for(ix=0;ix<Lx;ix++){
     rho0=rho(ix,iy,false);
     for(i=0;i<Q;i++){n0=n(ix,iy,i); fnew[n0]=feq(rho0,0,0,i);}
   }
+  
   iy=Ly-1; //Upper Wall
   for(ix=0;ix<Lx;ix++){
     rho0=rho(ix,iy,false);
@@ -132,7 +135,8 @@ void LatticeBoltzmann::Print(const char * NameFile,double gx,double gy){
   ofstream MyFile(NameFile); double rho0,Ux0,Uy0; int ix,iy; double Fx,Fy;
   ix=0;
   for(iy=0;iy<Ly;iy++){
-    rho0=rho(ix,iy,true); Fx=gx*rho0; Fy=gy*rho0;
+    rho0=rho(ix,iy,true);
+    Fx=gx*rho0; Fy=gy*rho0;
     Ux0=Jx(ix,iy,true,Fx)/rho0; Uy0=Jy(ix,iy,true,Fy)/rho0;
     MyFile<<iy<<" "<<Ux0<<endl;
   }
@@ -140,7 +144,7 @@ void LatticeBoltzmann::Print(const char * NameFile,double gx,double gy){
 }
 
 
-
+//creamos esta nueva función 
 double LatticeBoltzmann::Fi(double Ux0,double Uy0,double Fx,double Fy, int i){
     double UdotVi=Ux0*Vx[i]+Uy0*Vy[i];
     double FdotVi=Fx*Vx[i]+Fy*Vy[i]; double UdotF=Ux0*Fx+Uy0*Fy;
@@ -164,6 +168,6 @@ int main(void){
     Aire.Advection();
   }
   //Print
-  Aire.Print("POiseuille.dat",g,0);
+  Aire.Print("Poiseuille.dat",g,0);
   return 0;
 }  

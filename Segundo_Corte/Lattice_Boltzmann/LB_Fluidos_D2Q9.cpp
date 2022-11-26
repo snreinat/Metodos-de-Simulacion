@@ -9,7 +9,7 @@ const int Ly=64;
 const int Q=9;
 //const double W0=1.0/3;
 
-const double tau=0.55;
+const double tau=0.55;//0.5 no funciona en fluidos, es inestable
 const double Utau=1.0/tau;
 const double UmUtau=1-Utau;
 
@@ -51,7 +51,7 @@ LatticeBoltzmann::LatticeBoltzmann(void){
   int ArraySize=Lx*Ly*Q;
   f=new double [ArraySize];
   fnew=new double [ArraySize];
-
+ 
 }
 
 
@@ -122,19 +122,23 @@ void LatticeBoltzmann::Collision(void){
 void LatticeBoltzmann::ImposeFields(double Ufan){
   int i,ix,iy,n0;
   double rho0; int ixc=Lx/8, iyc=Ly/2, R=Ly/5; double R2=R*R;
+  
   //Go thhrough all cells, looking if they are fan or obstacle
   for(ix=0;ix<Lx;ix++)
     for(iy=0;iy<Ly;iy++){
       rho0=rho(ix,iy,false);
-      //fan
+      
+      //fan=ventilador
       if(ix==0)
-	for(i=0;i<Q;i++){n0=n(ix,iy,i); fnew[0]=feq(rho0,Ufan,0,i);}
+	for(i=0;i<Q;i++){n0=n(ix,iy,i); fnew[n0]=feq(rho0,Ufan,0,i);}
+      
       //obstalcle
       else if((ix-ixc)*(ix-ixc)+(iy-iyc)*(iy-iyc)<=R2)
-	for(i=0;i<Q;i++){n0=n(ix,iy,i); fnew[0]=feq(rho0,0,0,i);}
+	for(i=0;i<Q;i++){n0=n(ix,iy,i); fnew[n0]=feq(rho0,0,0,i);}
+      
       //An extra point ar one side to break the isotropy
        else if(ix==ixc && iy==iyc+R+1)
-	for(i=0;i<Q;i++){n0=n(ix,iy,i); fnew[0]=feq(rho0,0,0,i);}
+	for(i=0;i<Q;i++){n0=n(ix,iy,i); fnew[n0]=feq(rho0,0,0,i);}
     }
 }
 
@@ -163,7 +167,7 @@ void LatticeBoltzmann::Print(const char * NameFile,double Ufan){
 
 int main(void){
   LatticeBoltzmann Aire;
-  int t, tmax=2;
+  int t, tmax=10000;
   double rho0=1.0, Ufan0=0.1;
 
   
@@ -174,7 +178,7 @@ int main(void){
     Aire.Advection();
   }
 
-  Aire.Print("Aire2D.dat",Ufan0);
+  Aire.Print("TunelDeViento.dat",Ufan0);
   return 0;
 }
 
