@@ -9,8 +9,6 @@ const int Ly=128; // #celdas en Y
 const int Q=5;    // # de vectores por celda
 const double W0=1.0/3; // peso del vector centra es 1/3
 
-
-
 const double tau=0.5;
 const double Utau=1.0/tau;
 const double UmUtau=1-Utau;
@@ -49,14 +47,23 @@ LatticeBoltzmann::LatticeBoltzmann(void){
 LatticeBoltzmann::~LatticeBoltzmann(void){
     delete[] f;  delete[] fnew;
 }
+
 double LatticeBoltzmann::C(int ix, int iy){
-  double nl=1.1; //Indice de refracción del lente
-  double  ix_left=64;
-  double  W=32; //ancho
-  int ix_right=64+sqrt(W*W-(iy-Ly/2)*(iy-Ly/2));
-  double ns=1.0+(nl-1.0)*(tanh(ix-ix_left)-tanh(ix-ix_right))/2.0;
-  double C0=0.5/ns;
-  return C0;
+ 
+  int ix_left=64;
+  double n1=1; //Indice de refración  en el vacío
+  double n2=1.5; //Indice de refracción en el lente
+  double W=32;
+  double C1=0.5; //Velocidad de la luz
+  double C2=C1/n2;
+  
+  int ix_right=16.0+sqrt(6400-pow((iy-64.0),2.0));
+  //La función que suaviza el cambio está dada por:
+ 
+  double CT=0.5+((C2-C1)/2)*(tanh(ix-ix_left)-tanh(ix-ix_right));//cambio suave de n
+  
+   return CT;
+  
 }
 double LatticeBoltzmann::rho(int ix,int iy,bool UseNew){
   double sum; int i,n0;
@@ -111,7 +118,7 @@ void LatticeBoltzmann::Collision(void){
 }
 void LatticeBoltzmann::ImposeFields(int t){
   int i,ix,iy,n0;
-  double lambda,omega,rho0,Jx0,Jy0; lambda=10; omega=2*M_PI/lambda*C(ix, iy);
+  double lambda,omega,rho0,Jx0,Jy0; lambda=10.0; omega=2*M_PI/lambda*C(ix, iy);
   ix=0; 
   for(iy=0;iy<Ly;iy++){
      rho0=10*sin(omega*t); Jx0=Jx(ix,iy,false); Jy0=Jy(ix,iy,false);
@@ -133,8 +140,8 @@ void LatticeBoltzmann::Advection(void){
 }
 void LatticeBoltzmann::Print(const char * NameFile){
   ofstream MyFile(NameFile); double rho0; int ix,iy;
-  for(ix=0;ix<Lx;ix++){ 
-    for(iy=0;iy<Ly;iy++){ 
+  for(ix=0;ix<Lx/2;ix++){ //Graficar en el ancho w 
+    for(iy=0;iy<Ly;iy++){ // 
       rho0=rho(ix,iy,true);
       MyFile<<ix<<" "<<iy<<" "<<rho0<<endl;
     }
