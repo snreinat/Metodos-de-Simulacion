@@ -52,7 +52,7 @@ double LatticeBoltzmann::C(int ix, int iy){
  
   int ix_left=64;
   double n1=1; //Indice de refración  en el vacío
-  double n2=2.5; //Indice de refracción en el lente
+  double n2=2.0; //Indice de refracción en el lente
   double W=32;
   double C1=0.5; //Velocidad de la luz
   double C2=C1/n2;
@@ -165,7 +165,7 @@ int main(void){
     Waves.Advection();
   }
   //Show
-  Waves.Print("25.dat");
+  Waves.Print("20.dat");
  
   return 0;
 }  
